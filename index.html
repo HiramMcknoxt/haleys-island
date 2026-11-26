@@ -5,7 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#56a8c8">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Haley's Island</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="The 5th Lady">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
+<title>The 5th Lady: Pastor-in-training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,800;0,900;1,800;1,900&display=swap" rel="stylesheet">
 <style>
 :root{--ink:#4f3d57;--cream:#fffaf2;--pink:#ff8fb3;--lav:#b9a3ff;--sh:0 6px 18px rgba(79,61,87,.22);--font:ui-rounded,"SF Pro Rounded","Nunito","Quicksand","Varela Round","Arial Rounded MT Bold",system-ui,-apple-system,"Segoe UI",sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -167,6 +174,22 @@ textarea.txt{font-size:11px;font-weight:600}
 #tArt{display:block;margin:0 auto}
 .tcard h1{font-size:clamp(22px,6vw,31px);line-height:1.2;margin:2px 0 6px;color:#6a4a76;font-weight:900}
 .tcard h1 .hl{color:#ff7fa8}
+.tcard h1.game-title{margin:4px 0 4px}
+.game-title .title-main{display:block;font-size:clamp(27px,7.2vw,39px);line-height:1.12;padding-top:.42em;white-space:nowrap}
+.fifth-wrap{position:relative;display:inline-block;margin:0 .05em;padding:0 .1em}
+.fifth-crown{position:absolute;left:50%;top:-.58em;transform:translateX(-50%) rotate(-5deg);font-size:.5em;line-height:1;color:#c9970d;text-shadow:0 1px 0 #fff6c9,0 2px 7px rgba(170,120,0,.5);pointer-events:none}
+.fifth{font-family:"Playfair Display","Didot","Bodoni MT",Georgia,serif;font-weight:900;font-style:italic;font-size:1.78em;line-height:.86;letter-spacing:-.02em;background:linear-gradient(165deg,#8a5a00 0%,#b8860b 20%,#f2cd5c 40%,#fff3a6 52%,#e3ac1e 64%,#b8860b 84%,#8a5a00 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;filter:drop-shadow(0 1px 0 rgba(255,248,190,.95)) drop-shadow(0 3px 5px rgba(146,100,0,.30))}
+.fifth sup{font-size:.36em;font-weight:800;font-style:italic;letter-spacing:.01em;vertical-align:.9em;margin-left:.05em}
+.fifth-wrap::before{content:"✦";position:absolute;left:-.34em;top:.02em;font-size:.3em;line-height:1;color:#c9970d;opacity:.95}
+.fifth-wrap::after{content:"✦";position:absolute;right:-.34em;bottom:.1em;font-size:.24em;line-height:1;color:#d9a91f;opacity:.95}
+.title-filigree{display:flex;align-items:center;justify-content:center;gap:7px;margin:9px auto 3px;color:#b8860b}
+.fil-line{display:block;width:54px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,#c9970d)}
+.fil-line:last-child{background:linear-gradient(90deg,#c9970d,transparent)}
+.fil-diamond{font-size:7px;line-height:1;color:#c9970d}
+.fil-curl{font-size:16px;line-height:1;color:#a87c0a}
+.game-title .title-role{display:block;margin-top:5px;font-size:clamp(16px,4.4vw,20px);font-weight:900;letter-spacing:.06em;color:#c2477a}
+.title-tagline{margin:1px 0 9px;font-family:"Playfair Display",Georgia,serif;font-style:italic;font-weight:700;font-size:15.5px;color:#8b6f92}
+@media (max-width:380px){.game-title .title-main{white-space:normal}.fil-line{width:38px}}
 .tsub{margin:0 0 10px;font-weight:700;opacity:.72;font-size:13.5px;line-height:1.4}
 .slots{display:flex;flex-direction:column;gap:8px;margin:6px 0 4px}
 .slot{display:flex;align-items:center;gap:10px;background:#fff;border-radius:18px;border:3px solid #f3e8f5;padding:10px 12px;text-align:left;font-weight:900;font-size:15px;transition:transform .15s;width:100%}
@@ -262,7 +285,8 @@ textarea.txt{font-size:11px;font-weight:600}
 <div id="title"><div class="tcard">
   <span class="tw" style="top:-14px;left:22px">✨</span><span class="tw" style="top:26px;right:14px;animation-delay:.8s">🌸</span><span class="tw" style="bottom:-12px;right:40px;animation-delay:1.5s">🦋</span><span class="tw" style="bottom:70px;left:-10px;animation-delay:.4s;font-size:16px">💛</span>
   <canvas id="tArt"></canvas>
-  <h1><span class="hl">For Haley</span> — a tiny island of your own.</h1>
+  <h1 class="game-title"><span class="title-main">The <span class="fifth-wrap"><span class="fifth-crown" aria-hidden="true">♛</span><span class="fifth">5<sup>th</sup></span></span> Lady</span><span class="title-filigree" aria-hidden="true"><span class="fil-line"></span><span class="fil-diamond">◆</span><span class="fil-curl">❦</span><span class="fil-diamond">◆</span><span class="fil-line"></span></span><span class="title-role">Pastor-in-training</span></h1>
+  <p class="title-tagline">a tiny island of your own</p>
   <p class="tsub">Thrift it, junk it, build it out of free pallets, feed the town, raise thirteen opinionated hens, argue ethics with a vegan flytrap — and now: a boat, a coffee shop, a library, a garden, and Corey.</p>
   <div class="slots" id="slots"></div>
   <p class="thow" id="tHow"></p>
