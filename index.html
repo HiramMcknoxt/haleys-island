@@ -2497,6 +2497,16 @@ function feedFish(spot,x,y){
   if(!S.flags.fishLesson){S.flags.fishLesson=1;}
   setTimeout(()=>{const r=Math.random();if(r<.6){const g=wpick(FEED_GIFTS.map(f=>({f,w:f[2]||1})));g.f[1]();toast(g.f[0],3600);SFX.pick();}else toast('🐟 The fish gather and sparkle. They\'re thrilled to see you.',2800);updHUD();saveGame();},1300);
 }
+/* nearest sea water beside the player when standing at the water's edge (sand or grass), or null.
+   Docks keep their own feed spot, so standing on/near the home dock returns null. */
+function shoreFeedPoint(){
+  if(onDock(P.x,P.y)||onAnyDock(P.x,P.y))return null;
+  if(Math.hypot(P.x-(DOCK.x+16),P.y-(DOCK.y+40))<58)return null;
+  const pt=typeAt(P.x,P.y);if(pt!==2&&pt!==3)return null;
+  const dirs=[[0,1],[1,0],[-1,0],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]];
+  for(const dist of [18,26,34,42])for(const d of dirs){const x=P.x+d[0]*dist,y=P.y+d[1]*dist,t=typeAt(x,y);if(t===0||t===1)return[x,y];}
+  return null;
+}
 const AQUA=[{id:'lily',n:'Water Lily',w:2,where:'pond'},{id:'duck',n:'Duckweed',w:3,where:'pond'},{id:'cattail',n:'Cattail',w:2,where:'pond'},{id:'hyacinth',n:'Water Hyacinth',w:2,where:'any'},{id:'lettuce',n:'Water Lettuce',w:2,where:'any'},{id:'kelp',n:'Kelp',w:3,where:'sea'},{id:'seagrass',n:'Sea Grass',w:2,where:'sea'}];
 function scoopPlants(where){if(S.scoopLeft<=0){toast('🪴 Your scoop basket is full for today. More tomorrow!');return;}S.scoopLeft--;useEnergy(1);
   const e=wpick(AQUA.filter(a=>a.where===where||a.where==='any'));S.aqua++;S.aquaLog[e.id]=(S.aquaLog[e.id]||0)+1;SFX.dig();emitSparkles(P.x,P.y-6,6,'#c8ffd8');floatText(P.x,P.y-50,'+1 '+e.n+' 🌿');
@@ -2516,7 +2526,7 @@ function rowEl(html,btns){const r=el('div','row',html);for(const b of btns||[])i
 /* ---------- missions board (Jen's community board) ---------- */
 const BOARD=[
  {id:'jenhi',title:'Coffee With Your Best Friend',desc:'Go see Jen at The Daily Grind in the East Village.',goal:()=>S.flags.metJen,rw:{cash:5,kind:1}},
- {id:'feedfish',title:"Jen's Fish Lesson",desc:'Feed the fish at the dock or the pond.',goal:()=>S.stats.fed>=1,rw:{kind:1}},
+ {id:'feedfish',title:"Jen's Fish Lesson",desc:'Feed the fish at the dock, the pond, the shore, or from the boat.',goal:()=>S.stats.fed>=1,rw:{kind:1}},
  {id:'payfwd',title:'Coffee for Everybody',desc:'Pay forward 3 coffees at The Daily Grind ($2 each).',goal:()=>S.stats.payfwd>=3,rw:{kind:3}},
  {id:'mealmaria',title:'Meal Train for Maria',desc:'Maria is expecting twins! Bring her 6 eggs.',at:'maria',need:{eggs:6},rw:{cash:5,kind:3},line:["Six eggs?! Haley. Luis was going to make cereal for dinner again. You've saved this family.","The twins say thank you. Well — they kicked. I'm counting it."]},
  {id:'dme1',title:'Care Closet Delivery',desc:'Deliver one item from the church Care Closet to a neighbor who needs it.',goal:()=>S.stats.dmeDelivered+S.stats.babyDelivered>=1,rw:{kind:3}},
@@ -2571,9 +2581,10 @@ function extIslandActs(add){
   if(G.boating){
     let nearDock=null;for(const d of DOCKS){if(Math.hypot(d.end[0]-P.x,d.end[1]-P.y)<52)nearDock=d;}
     if(nearDock){add('tie',nearDock.end[0],nearDock.end[1],52,'⚓','Tie up at '+nearDock.name,()=>tieUp(nearDock));return;}
-    const sh=typeAt(P.x,P.y)===1;
-    if(sh&&S.scoopLeft>0)add('scoop',P.x,P.y,60,'🌿','Scoop water plants',()=>scoopPlants('sea'),P.x,P.y-30,30);
-    else add('bfish',P.x,P.y,60,'🎣','Fish from the boat',()=>openFishing('sea'),P.x,P.y-30,30);
+    const sh=typeAt(P.x,P.y)===1,scoopAvail=sh&&S.scoopLeft>0,canFeed=S.flags.fishLesson||S.flags.metJen,fedBoat=S.fedDay.boat===S.day;
+    const addFish=()=>{if(scoopAvail)add('scoop',P.x,P.y,60,'🌿','Scoop water plants',()=>scoopPlants('sea'),P.x,P.y-30,30);else add('bfish',P.x,P.y,60,'🎣','Fish from the boat',()=>openFishing('sea'),P.x,P.y-30,30);};
+    if(canFeed&&!fedBoat){add('bfeed',P.x,P.y,60,'🐟','Feed the fish',()=>feedFish('boat',P.x+20,P.y+12),P.x+26,P.y+4,30);addFish();}
+    else{addFish();if(canFeed)add('bfeed',P.x+26,P.y+4,60,'🐟',fedBoat?'Fish are full':'Feed the fish',()=>feedFish('boat',P.x+20,P.y+12),P.x+26,P.y+4,30);}
     return;
   }
   for(const d of DOCKS){const x=d.end[0],y=d.land[1]+(d.id==='islet'?-8:4);add('boat'+d.id,x,y,40,'⛵','Hop in the boat',()=>boardBoat(d),d.end[0],d.end[1],26);}
@@ -2583,6 +2594,7 @@ function extIslandActs(add){
   const px=POND.x-POND.rx-6,py=POND.y+6;
   add('pfish',px,py,36,'🎣','Fish the pond',()=>openFishing('pond'),px,py-18,22);
   if(S.flags.fishLesson||S.flags.metJen)add('pfeed',POND.x,POND.y+POND.ry+8,34,'🐟',S.fedDay.pond===S.day?'Fish are full':'Feed the pond fish',()=>feedFish('pond',POND.x,POND.y+20),POND.x,POND.y+POND.ry-6,22);
+  if(S.flags.fishLesson||S.flags.metJen){const sp=shoreFeedPoint();if(sp)add('sfeed',sp[0],sp[1],48,'🐟',S.fedDay.shore===S.day?'Fish are full':'Feed the fish',()=>feedFish('shore',sp[0],sp[1]),sp[0],sp[1],26);}
   add('pscoop',POND.x+POND.rx+6,POND.y,34,'🌿',S.scoopLeft>0?'Scoop water plants':'Scoop basket full',()=>scoopPlants('pond'),POND.x+POND.rx,POND.y-14,22);
   add('garden',1032,644,34,'🌱','Garden beds',openGarden,1032,612,26);
   if(S.greenhouse)add('gh',GHS.x,GHS.y+12,44,'🪴','Greenhouse',()=>openGarden('gh'),GHS.x,GHS.y-40,40);
@@ -2646,7 +2658,7 @@ const JOKE_DRINKS=['The Mother Clucker (an egg cream with attitude)','The Venus 
 function todayJoke(){return JOKE_DRINKS[S.day%JOKE_DRINKS.length];}
 function talkJen(){
   const first=!S.flags.metJen;S.flags.metJen=1;S.flags.fishLesson=1;SFX.talk();
-  if(first){openDialog('jen',["HALEY. Finally. I was about to file a missing persons report. On myself. Because I was lost without you.","Welcome to The Daily Grind. I named it that because everything else sounded like a yoga studio.","Your first drink every day is free. Best friend tax: zero dollars, forever. Don't argue.","Oh — and I take my break at your dock around lunchtime to feed the fish. Pellets, not bread. Bread is fish junk food. Now you know too.","Community board's on my wall. Half this town's problems end up pinned there. The other half end up in my ear."],()=>{updHUD();saveGame();});return;}
+  if(first){openDialog('jen',["HALEY. Finally. I was about to file a missing persons report. On myself. Because I was lost without you.","Welcome to The Daily Grind. I named it that because everything else sounded like a yoga studio.","Your first drink every day is free. Best friend tax: zero dollars, forever. Don't argue.","Oh — and I take my break at your dock around lunchtime to feed the fish. You can too — from the dock, right off any shore, or leaning over the side of the boat. Pellets, not bread. Bread is fish junk food. Now you know too.","Community board's on my wall. Half this town's problems end up pinned there. The other half end up in my ear."],()=>{updHUD();saveGame();});return;}
   const m=deliverable('jen');if(m){payNeed(m.need);openDialog('jen',m.line,()=>completeMission(m));return;}
   const where=JEN.where;
   const L=where==='dock'?["Break time! The fish and I have a standing lunch date. Don't tell Brenda."]:where==='beach'?(isDayOff()?["DAY OFF. I'm horizontal. I'm a beach towel now. If you want to run the shop, the key's under the gnome."]:["Evening junk walk. I'm stocking the lost-and-found shelf. Found a single flip-flop and a love letter. Business as usual."]):[pick(JEN_TALK)[0]];
