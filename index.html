@@ -752,6 +752,36 @@ function drawFox(c,x,y,p,st,t){
   c.fillStyle='rgba(255,120,150,.45)';ell(c,14.5,-14.6,1.7,1);c.fill();c.restore();
 }
 function drawCritterAt(c,d,x,y,st,t){switch(d.kind){case'frog':drawFrog(c,x,y,d.pal,st,t);break;case'bunny':drawBunny(c,x,y,d.pal,st,t);break;case'fly':drawFly(c,x,y,d.pal,st,t);break;case'turtle':drawTurtle(c,x,y,d.pal,st,t);break;case'fox':drawFox(c,x,y,d.pal,st,t);break;case'crab':drawCrab(c,x,y,d.pal,st,t);break;case'heron':drawHeron(c,x,y,d.pal,st,t);break;case'otter':drawOtter(c,x,y,d.pal,st,t);break;case'duck':drawDuck(c,x,y,d.pal,st,t);break;}}
+/* Nubbins the squirrel — and yes, that tail is the whole point. It is a NUB. A short, proud, distinguished nub. */
+function drawSquirrel(c,x,y,st,t,sc){
+  const lift=st.lift||0;shadow(c,x,y,9-Math.min(3,lift*.2),2.8);
+  c.save();c.translate(x,y-lift);if(sc)c.scale(sc,sc);c.scale(st.facing||1,1);
+  const fur='#9a7b5f',furD='#7d6248',belly='#f6e7cb',wag=Math.sin(t*3.4+(st.ph||0))*.22,proud=!!st.proud;
+  /* THE NUB: a stubby little rounded tail, barely past the body, wagging with pride. NOT a big plume. Never a plume. */
+  c.save();c.translate(-8,-10);c.rotate(-.45+wag);c.fillStyle=furD;ell(c,-3.4,0,4.8,3.3);c.fill();c.fillStyle=fur;circ(c,-7.6,-.4,2.3);c.fill();c.restore();
+  c.fillStyle=furD;ell(c,-4,-1,3.2,1.6);c.fill();ell(c,5,-1,3.2,1.6);c.fill();
+  c.fillStyle=fur;ell(c,0,proud?-11:-9,proud?8:9.5,proud?10:8);c.fill();
+  c.fillStyle=belly;ell(c,2.5,proud?-10:-7.5,5,proud?6.5:5.2);c.fill();
+  if(st.shiny){ /* paws proudly holding today's shiny treasure (a bottle cap, usually) */
+    c.fillStyle=furD;ell(c,6.5,-9,2.6,2);c.fill();ell(c,6.5,-13.5,2.6,2);c.fill();
+    c.fillStyle='#d9dee8';circ(c,8,-11.2,3);c.fill();c.fillStyle='#aab4c4';circ(c,8,-11.2,1.7);c.fill();
+    if(Math.floor(t*2)%3===0){c.fillStyle='#fff';sparklePath(c,12,-16,2.6);c.fill();}
+  }else{c.fillStyle=furD;ell(c,7.5,-7,2.4,3.6,.3);c.fill();if(proud)ell(c,-7.5,-9,2.4,3.4,-.3),c.fill();}
+  const hy=proud?-23:-20;
+  c.fillStyle=fur;poly(c,[-1,hy-3,0,hy-9,3.4,hy-3.6]);c.fill();poly(c,[6.5,hy-3.8,9,hy-9.5,11,hy-3]);c.fill();
+  c.strokeStyle=furD;c.lineWidth=.8;c.beginPath();c.moveTo(1,hy-8.6);c.lineTo(.4,hy-11);c.moveTo(9.2,hy-9);c.lineTo(9.8,hy-11.6);c.stroke();
+  circ(c,4.5,hy,7.2);c.fill();
+  c.fillStyle=belly;ell(c,6.5,hy+2.6,4.2,3.2);c.fill();
+  c.strokeStyle='#2f2433';c.lineWidth=1.1;
+  if(st.sleep||st.blink){c.beginPath();c.moveTo(5.4,hy-1.4);c.lineTo(8.8,hy-1.4);c.stroke();}
+  else if(st.happy){c.beginPath();c.arc(7,hy-.8,1.8,1.1*Math.PI,1.9*Math.PI);c.stroke();}
+  else{c.fillStyle='#2f2433';circ(c,7.2,hy-1.6,1.5);c.fill();c.fillStyle='#fff';circ(c,7.7,hy-2.2,.5);c.fill();}
+  c.fillStyle='#4a2f28';circ(c,11.2,hy+1.2,1.15);c.fill();
+  if(st.happy&&!st.sleep){c.fillStyle='#fff';rrect(c,9.6,hy+3.4,2.2,2.6,.6);c.fill();}
+  else if(!st.sleep){c.strokeStyle='#6b2f3a';c.lineWidth=.9;c.beginPath();c.arc(9.4,hy+2.2,1.7,.15*Math.PI,.85*Math.PI);c.stroke();}
+  c.fillStyle='rgba(255,130,160,.5)';ell(c,4.6,hy+2.8,1.7,1);c.fill();
+  c.restore();
+}
 const CRIT_H={frog:22,bunny:36,fly:16,turtle:24,fox:34};
 
 /* ---------- people (cut-paper style, stepped animation) ---------- */
@@ -1498,6 +1528,7 @@ function dlgTick(dt){
   const cv=$('dlgPic'),pd=Math.min(2,window.devicePixelRatio||1),w=86,h=96;if(cv.width!==w*pd){cv.width=w*pd;cv.height=h*pd;cv.style.width=w+'px';cv.style.height=h+'px';}
   const c=cv.getContext('2d');c.setTransform(pd,0,0,pd,0,0);c.clearRect(0,0,w,h);const talking=DLG.shown<DLG.full.length;
   if(DLG.who==='venus')drawVenus(c,43,94,T,talking,1.65);
+  else if(DLG.who==='nubbins')drawSquirrel(c,43,88,{facing:1,happy:talking,proud:true,ph:0,blink:false,sleep:false,lift:0},T,2.6);
   else if(NPC_LOOK[DLG.who]){const L=NPC_LOOK[DLG.who];drawPerson(c,43,150,{...L,talk:talking,moving:false,walk:0,lx:0},T,2.5);}
   else{c.font='46px '+EFONT;c.textAlign='center';c.textBaseline='middle';c.fillStyle='#4f3d57';c.fillText(DLG_EMO[DLG.who]||'💬',w/2,h/2);}
 }
@@ -2300,6 +2331,83 @@ function drawFloat(c,f,t){const x=f.x,y=f.y+Math.sin(t*2+f.ph)*1.5;c.fillStyle='
   if(Math.floor(t*2+f.ph)%4===0){c.fillStyle='#fff';sparklePath(c,x+6,y-8,2.4);c.fill();}}
 function drawFeedFx(c,t){if(!G.feed)return;const f=G.feed,k=f.t/f.max;for(let i=0;i<7;i++){const a=T*1.6+i*.9,r=10+i*3;const x=f.x+Math.cos(a)*r,y=f.y+Math.sin(a)*r*.45;c.globalAlpha=Math.min(1,k*3)*.9;c.fillStyle=['#ffb347','#ff8fb3','#ffd36e','#8ec5ff'][i%4];ell(c,x,y,3.4,1.8,a+Math.PI/2);c.fill();poly(c,[x-Math.cos(a+1.57)*3,y-Math.sin(a+1.57)*1.6,x-Math.cos(a+1.57)*6+1,y-Math.sin(a+1.57)*3-1,x-Math.cos(a+1.57)*6-1,y-Math.sin(a+1.57)*3+1]);c.fill();}c.globalAlpha=1;}
 
+/* ---------- Nubbins: neighborhood squirrel, nub-tailed and extremely busy ---------- */
+Object.assign(DLG_NAMES,{nubbins:'Nubbins 🐿️ · Neighborhood Squirrel'});
+const NUB={x:HX-88,y:HY+34,hx0:0,hy0:0,hx1:0,hy1:0,hopK:1,hopDur:.22,state:'idle',timer:1,facing:1,lift:0,ph:Math.random()*TAU,blink:false,blinkT:rnd(1.5,4),happy:false,proud:false,shiny:false,sleep:false,spot:'',zT:0};
+function nubSpot(){
+  const t=S.time,junkDay=S.day%2===0?JUNK[0]:JUNK[1];
+  if(t<.28)return{k:'porch',x:HX-88,y:HY+34};
+  if(t<.45)return{k:'fence',x:646,y:584};
+  if(t<.62)return{k:'junk',x:junkDay.x+4,y:junkDay.y-16,perch:1};
+  if(t<.8)return{k:'yard',x:1108,y:604};
+  return{k:'porch',x:HX-88,y:HY+34};
+}
+const NUB_LINES=[
+ ["Oh good, you're here. Quick meeting. Agenda: snacks, gossip, and me. Mostly me."],
+ ["See the tail? That's not short. That's AERODYNAMIC. Other squirrels are out here dragging a whole feather duster. I travel light. I'm basically a sports car."],
+ ["Busy day. I've got three stashes, two meetings, and a fence to supervise. Being this important is exhausting, but I persevere."],
+ ["Fence-line news: Mother Clucker gave the mailbox a look this morning. A LOOK. Pass it on. I don't know what it means either, but it felt significant."],
+ ["The nub? Distinguished. Like a mayor's signature, but furrier."],
+ ["That shiny thing in the junk pile? Mine. The other shiny thing? Also mine. I'm not a hoarder, I'm a curator. The pile is a museum. You're welcome."],
+ ["I didn't LOSE the rest of my tail. I donated it. To science. The science of looking this good."],
+ ["I buried an acorn somewhere extremely important. Where? …That's tomorrow's problem. Tomorrow Nubbins is very smart. He'll figure it out."],
+ ["All the other squirrels are jealous of the nub. They won't say it, but I can tell. They look at it constantly. Constantly."],
+ ["You know what a full tail says? 'I have time to sit around being fluffy.' I do NOT have that time. I have rounds to make."],
+ ["Neighborhood report: Nadey Jo's porch? Excellent. Your yard? Elite. The coop? Those ladies respect me. One of them bowed. (She was pecking the ground, but still.)"],
+ ["Some squirrels spend all day showing off their tail like it's a parade float. Mine's a sports model. Short. Serious. Professional."],
+ ["I run the fence-line news service around here. Circulation: everyone. Accuracy: mostly. Retractions: never."],
+ ["If you see a shiny bottle cap, that's not litter. That's my savings account. Please respect the bank."]];
+function talkNubbins(){
+  NUB.happy=true;setTimeout(()=>NUB.happy=false,900);
+  if(!S.flags.metNub){S.flags.metNub=1;openDialog('nubbins',["Oh! Oh good, you're finally here. I have a schedule, but I'll allow it. I'm Nubbins. I live here. Well — I live EVERYWHERE here. The whole neighborhood is technically my office.","Yes, the tail. Go ahead, look. Everybody looks. It's a nub. A short, distinguished, extremely aerodynamic nub. The other squirrels are sick with jealousy. Sick.","Anyway. I keep an eye on this yard. I supervise the fence line, I inspect the junk piles, and I know everything that happens on this street before it happens. If you need gossip, I'm your squirrel.","Now if you'll excuse me, I'm very busy and self-important. But do come back. I allow audiences most days."],()=>{emitHearts(NUB.x,NUB.y-24,3);updHUD();saveGame();});return;}
+  const i=S.flags.nubTalk||0;S.flags.nubTalk=i+1;
+  const lines=NUB_LINES[i%NUB_LINES.length].slice();
+  if(S.flags.nubGiftDay!==S.day&&i%2===1){
+    lines.push({t:"Wait. Wait wait wait. For you — a premium acorn. Hand-selected. By me. It's basically an award.",ch:[['🌰 Accept the acorn (it\'s an honor)',["You accept the acorn with the gravity it deserves. Nubbins nods once, like a tiny king. +1 🍎"],()=>{S.flags.nubGiftDay=S.day;S.fruit++;SFX.pick();emitSparkles(NUB.x,NUB.y-20,6,'#fff6c9');updHUD();saveGame();}],['It\'s… an acorn?',["AN acorn? AN ACORN. This is a vintage, fence-line, Nubbins-certified acorn. …Fine, keep it anyway. I have four hundred. +1 🍎"],()=>{S.flags.nubGiftDay=S.day;S.fruit++;SFX.pick();emitSparkles(NUB.x,NUB.y-20,6,'#fff6c9');updHUD();saveGame();}]]});
+  }
+  openDialog('nubbins',lines);
+}
+function nubAcornPos(){if(!S||S.flags.nubAcornDay===S.day)return null;if(hash2(S.day,77)>.55)return null;return{x:HX-46,y:HY+24};}
+function updateNubbins(dt){
+  if(!S)return;
+  const sp=nubSpot(),night=phaseOf(S.time)==='night';
+  NUB.shiny=!!sp.perch;
+  NUB.blinkT-=dt;if(NUB.blinkT<0){NUB.blink=true;if(NUB.blinkT<-.12){NUB.blink=false;NUB.blinkT=rnd(1.5,4.5);}}
+  const dx=P.x-NUB.x,dy=P.y-NUB.y,od=Math.hypot(dx,dy),tx=sp.x,ty=sp.y,d=Math.hypot(tx-NUB.x,ty-NUB.y);
+  /* doorstep acorn gift pickup */
+  const g=nubAcornPos();
+  if(g&&G.mode==='island'&&!G.boating&&Math.hypot(g.x-P.x,g.y-P.y)<17){
+    S.flags.nubAcornDay=S.day;S.fruit++;SFX.pick();emitSparkles(g.x,g.y-8,7,'#fff6c9');floatText(g.x,g.y-22,'+1 🍎');
+    toast('🌰 Nubbins left a premium acorn on your doorstep. It\'s basically an award.',3600);updHUD();saveGame();
+  }
+  NUB.sleep=night&&sp.k==='porch'&&d<12;
+  NUB.proud=!NUB.sleep&&od<85&&G.mode==='island';
+  if(NUB.sleep){NUB.zT-=dt;if(NUB.zT<0){NUB.zT=1.6;emitZ(NUB.x+8,NUB.y-22);}return;}
+  /* long off-screen trips happen at squirrel speed (instantly, while nobody's watching) */
+  const v=G.view,on=(x,y)=>x>v.x0-40&&x<v.x1+40&&y>v.y0-40&&y<v.y1+40;
+  if(d>260&&!on(NUB.x,NUB.y)&&!on(tx,ty)){NUB.x=tx;NUB.y=ty;NUB.state='idle';return;}
+  if(NUB.state==='hop'){
+    NUB.hopK+=dt/NUB.hopDur;const k=Math.min(1,NUB.hopK);
+    NUB.x=lerp(NUB.hx0,NUB.hx1,k);NUB.y=lerp(NUB.hy0,NUB.hy1,k);NUB.lift=Math.sin(k*Math.PI)*6;
+    if(k>=1){NUB.lift=0;NUB.state='idle';NUB.timer=rnd(.2,.7);}
+    return;
+  }
+  NUB.timer-=dt;
+  if(d>6&&NUB.timer<=0){
+    const s=Math.min(30,d),a=Math.atan2(ty-NUB.y,tx-NUB.x);
+    NUB.hx0=NUB.x;NUB.hy0=NUB.y;NUB.hx1=NUB.x+Math.cos(a)*s;NUB.hy1=NUB.y+Math.sin(a)*s;NUB.hopK=0;NUB.state='hop';
+    if(Math.abs(tx-NUB.x)>2)NUB.facing=tx>NUB.x?1:-1;
+  }else if(od<85&&Math.abs(dx)>4)NUB.facing=dx>0?1:-1;
+}
+function drawNubAcorn(c,g,t){
+  shadow(c,g.x,g.y,6,2,.15);c.save();c.translate(g.x,g.y);
+  c.fillStyle='#b5773a';ell(c,0,-3.5,4.6,5.4);c.fill();
+  c.fillStyle='#7d4f24';c.beginPath();c.ellipse(0,-7.6,5.2,3,0,Math.PI,0);c.closePath();c.fill();c.fillRect(-1,-11,2,2.6);
+  c.fillStyle='rgba(255,255,255,.55)';circ(c,-1.8,-4.5,1.1);c.fill();
+  if(Math.floor(t*2)%3===0){c.fillStyle='#fff';sparklePath(c,7,-12,2.4);c.fill();}
+  c.restore();
+}
+
 /* ---------- island entity hooks ---------- */
 let gateToastT=0;
 function extBlocked(x,y){if(S&&S.kind<5&&x>1840&&y<GATE_Y&&y>200&&!G.boating){if(gateToastT<=0&&G.mode==='island'){gateToastT=6;toast('🌲 The trail to the pine woods & lighthouse opens at 💗 5 kindness. Jen\'s "working on it."',4200);}return true;}return false;}
@@ -2320,6 +2428,8 @@ function extAddEnts(add,inV){
   if(inV(2330,GATE_Y,80)&&S.kind<5)add(GATE_Y,112);
   if(inV(2520,1260,60))add(1284,113);
   const ej=S.earl.gifts.slice(-3);ej.forEach((g,i)=>{const x=TOWN[2].x-44+i*30,y=TOWN[2].y+16;if(D[g]&&inV(x,y,40))add(y,114,{t:g,x,y});});
+  if(inV(NUB.x,NUB.y,60))add(NUB.y,115);
+  const nag=nubAcornPos();if(nag&&inV(nag.x,nag.y,40))add(nag.y,116,nag);
 }
 function extDraw(c,e){switch(e.k){
   case 100:drawEB(c,e.o,T);break;case 101:drawNHome(c,e.o,T);break;case 102:drawLighthouse(c,T);break;case 103:drawGullShack(c,T);break;case 104:drawGreenhouse(c,T);break;case 105:drawGarden(c,T);break;
@@ -2331,7 +2441,9 @@ function extDraw(c,e){switch(e.k){
   case 111:drawFloat(c,e.o,T);break;
   case 112:c.fillStyle='#8a6a52';c.fillRect(2304,GATE_Y-18,4,20);c.fillRect(2354,GATE_Y-18,4,20);c.fillStyle='#d9b07c';rrect(c,2306,GATE_Y-14,50,10,2);c.fill();c.fillStyle='#fff3c4';rrect(c,2306,GATE_Y-34,52,14,3);c.fill();label(c,'OPENS AT 💗5',2332,GATE_Y-27,5.4,'#e0476a',900);break;
   case 113:c.fillStyle='#ff8fb3';c.beginPath();c.moveTo(2501,1258);c.quadraticCurveTo(2521,1238,2541,1258);c.closePath();c.fill();c.fillStyle='#fff';c.beginPath();c.moveTo(2514,1250);c.quadraticCurveTo(2521,1240,2528,1250);c.closePath();c.fill();break;
-  case 114:drawDecorAt(c,e.o.t,e.o.x,e.o.y,.55,T,null);break;}}
+  case 114:drawDecorAt(c,e.o.t,e.o.x,e.o.y,.55,T,null);break;
+  case 115:drawSquirrel(c,NUB.x,NUB.y,NUB,T,1);break;
+  case 116:drawNubAcorn(c,e.o,T);break;}}
 function extGlow(c){
   for(const b of EB)glow(c,b.x,b.y-36,60,'255,210,140',.35*nightK);for(const h of NHOMES)glow(c,h.x,h.y-38,40,'255,200,120',.4*nightK);
   glow(c,LIGHT.x,LIGHT.y-86,46,'255,245,190',.25+.5*nightK);if(nightK>.2){const a=T*.8;c.fillStyle='rgba(255,245,190,'+(.12*nightK)+')';c.beginPath();c.moveTo(LIGHT.x,LIGHT.y-86);c.arc(LIGHT.x,LIGHT.y-86,520,a,a+.22);c.closePath();c.fill();}
@@ -2342,7 +2454,7 @@ function moveNPC(n,tx,ty,dt,sp){const dx=tx-n.x,dy=ty-n.y,d=Math.hypot(dx,dy);co
   if(!n.placed||(d>200&&!on(n.x,n.y)&&!on(tx,ty))){n.x=tx;n.y=ty;n.placed=true;n.moving=false;return;}
   if(d<3){n.moving=false;return;}const s=Math.min(sp,d*4);n.x+=dx/d*s*dt;n.y+=dy/d*s*dt;n.walk+=s*dt*.07;n.moving=true;n.face=dx>0?1:-1;}
 function extUpdate(dt){
-  if(!S)return;gateToastT-=dt;updateReach(dt);noteTick(dt);
+  if(!S)return;gateToastT-=dt;updateReach(dt);noteTick(dt);updateNubbins(dt);
   for(const f of FOLK){const t=schedTarget(f.id);moveNPC(f,t[0],t[1],dt,48);}
   const jp=jenPlace();JEN.where=jp[0];if(jp[0]!=='house')moveNPC(JEN,jp[1],jp[2],dt,60);
   if(G.mode==='island'||G.mode==='house')updateCorey(dt);
@@ -2481,6 +2593,7 @@ function extIslandActs(add){
   add('church',EB[3].x,EB[3].y+14,44,'⛪','Island UMC',openChurch,EB[3].x,EB[3].y-50,60);
   add('closet',EB[3].x+EB[3].w/2+18,EB[3].y+12,34,'🩼','Care Closet (DME)',()=>{XM.tab='closet';openChurch('closet');},EB[3].x+EB[3].w/2+18,EB[3].y-40,30);
   for(const f of FOLK){if(!f.placed)continue;const dm=deliverable(f.id);add('f:'+f.id,f.x,f.y+6,36,dm?'🎁':'💬',(dm?'Help ':'Talk to ')+NPC_LOOK[f.id].name,()=>talkFolk(f.id),f.x,f.y-22,20);}
+  add('nubbins',NUB.x,NUB.y+6,40,'🐿️',S.flags.metNub?'Talk to Nubbins':'Meet Nubbins',talkNubbins,NUB.x,NUB.y-14,22);
   if(coreyWith()&&!piggy())add('corey',CO.x,CO.y+6,32,'💞','Talk to Corey',talkCorey,CO.x,CO.y-22,20);
   add('lighthouse',LIGHT.x,LIGHT.y+14,40,'🗼','Climb the lighthouse',climbLighthouse,LIGHT.x,LIGHT.y-60,40);
   add('gull',ISLET.x+20,ISLET.y+14,40,'🛖','The Gull Shack',gullShack,ISLET.x+20,ISLET.y-30,40);
