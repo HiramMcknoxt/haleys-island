@@ -777,6 +777,7 @@ function drawPerson(c,x,y,p,t,sc){
   c.fillStyle=o.top;c.beginPath();c.moveTo(-9,-7);c.quadraticCurveTo(-9.5,-19,-5,-20);c.lineTo(5,-20);c.quadraticCurveTo(9.5,-19,9,-7);c.closePath();c.fill();
   if(o.check){c.strokeStyle='rgba(60,20,30,.35)';c.lineWidth=1;c.beginPath();for(let i=-6;i<=6;i+=4){c.moveTo(i,-19);c.lineTo(i,-8);}for(let j=-17;j<=-9;j+=4){c.moveTo(-8,j);c.lineTo(8,j);}c.stroke();}
   if(o.spots){c.fillStyle='#5a3b1f';for(const [sx,sy] of [[-5,-16],[3,-17],[6,-11],[-2,-11],[-6,-10],[1,-14]]){ell(c,sx,sy,1.5,1.1);c.fill();}}
+  if(o.dots){c.fillStyle='#fff';for(const [sx,sy] of [[-5,-16],[3,-17],[6,-11],[-2,-11],[-6,-10],[1,-14]]){circ(c,sx,sy,1.3);c.fill();}}
   if(o.bib){c.fillStyle=o.pants;rrect(c,-5,-17,10,10,2);c.fill();c.fillStyle='#ffd36e';circ(c,-3.5,-16,.9);c.fill();circ(c,3.5,-16,.9);c.fill();}
   if(p.belly){c.fillStyle=o.top;ell(c,2.5,-10.5,7.8,6.6);c.fill();c.fillStyle='rgba(255,255,255,.2)';ell(c,4.4,-12.6,3,2);c.fill();}
   if(p.apron){c.fillStyle=p.apron;rrect(c,-6.5,-17,13,15,2);c.fill();c.fillStyle='rgba(0,0,0,.08)';c.fillRect(-6.5,-11,13,1);for(const [px,py,pc] of [[-3,-14,'#ff5d8f'],[2.5,-15,'#8ec5ff'],[3,-9,'#7bd389'],[-2.5,-8,'#fff']]){c.fillStyle=pc;circ(c,px,py,1.2);c.fill();}}
@@ -786,7 +787,8 @@ function drawPerson(c,x,y,p,t,sc){
   c.fillStyle=o.top;ell(c,-9.5,-13+sw,2.6,5,.3);c.fill();ell(c,9.5,-13-sw+wave,2.6,5,-.3);c.fill();
   c.fillStyle=p.skin;circ(c,-10.5,-8.5+sw,2.3);c.fill();circ(c,10.5,-8.5-sw+wave,2.3);c.fill();
   const hc=p.hair,st=p.style;
-  if(st==='long'){c.fillStyle=hc;rrect(c,-12.5,-38,25,27,9);c.fill();}
+  if(st==='long'){c.fillStyle=hc;rrect(c,-12.5,-38,25,19,9);c.fill();rrect(c,-12.5,-22,4.5,14,2);c.fill();rrect(c,8,-22,4.5,14,2);c.fill();}
+  if(st==='wavy'){c.fillStyle=hc;rrect(c,-12.5,-38,25,19,9);c.fill();circ(c,-9.5,-19,3.6);c.fill();circ(c,9.5,-19,3.6);c.fill();}
   if(st==='curly'){c.fillStyle=hc;for(let a=0;a<12;a++){const ang=a/12*TAU;circ(c,Math.cos(ang)*11.5,-30+Math.sin(ang)*10.5,5);c.fill();}}
   c.fillStyle=p.skin;circ(c,0,-30,11);c.fill();
   if(p.cap){c.fillStyle=p.cap;c.beginPath();c.arc(0,-31,11.8,Math.PI,0);c.closePath();c.fill();ell(c,6,-31,8,2.2);c.fill();}
@@ -796,6 +798,7 @@ function drawPerson(c,x,y,p,t,sc){
     if(st==='bob'){rrect(c,-12.6,-33,4.2,12,2);c.fill();rrect(c,8.4,-33,4.2,12,2);c.fill();}
     if(st==='bun')circ(c,1,-43.5,5.6),c.fill();
     if(st==='long'){rrect(c,-12.6,-33,3.6,18,2);c.fill();rrect(c,9,-33,3.6,18,2);c.fill();}
+    if(st==='wavy'){for(const s of[-1,1]){circ(c,s*11.6,-31,3.4);c.fill();circ(c,s*12.1,-26.5,3.4);c.fill();circ(c,s*11.6,-22,3.2);c.fill();}}
   }
   const lx=clamp(p.lx||0,-1,1)*1.2;
   c.fillStyle='#fff';ell(c,-3.8,-28.5,4.2,5);c.fill();ell(c,3.8,-28.5,4.2,5);c.fill();
@@ -2101,6 +2104,7 @@ function extSanitize(d){const b=EXT_SAVE();for(const k in b){if(d[k]===undefined
 Object.assign(NPC_LOOK,{
  corey:{name:'Corey',skin:'#f1c7a5',hair:'#5a3825',style:'short',outfit:{top:'#4f7cac',pants:'#3b3f58',check:1},beard:'#6b4630'},
  jen:{name:'Jen',skin:'#f9dcc4',hair:'#2b2024',style:'long',outfit:{top:'#ff5d8f',pants:'#2f2a3a'},apron:'#ffd36e',earrings:'#ffd36e'},
+ nadey:{name:'Nadey Jo',skin:'#f9dcc4',hair:'#e7c66b',style:'wavy',outfit:{top:'#2b2024',pants:'#4f7cac',dots:1},glasses:1},
  maria:{name:'Maria',skin:'#c68c5a',hair:'#2b2024',style:'long',outfit:{top:'#ff9e6d',pants:'#5b6a8f'},belly:1},
  luis:{name:'Luis',skin:'#c68c5a',hair:'#2b2024',style:'short',outfit:{top:'#3f9a58',pants:'#3b3f58'},stache:'#2b2024'},
  keisha:{name:'Keisha',skin:'#6e4429',hair:'#2b2024',style:'bun',outfit:{top:'#b9a3ff',pants:'#2f2a3a'},belly:1,earrings:'#e7c66b'},
@@ -2113,12 +2117,12 @@ Object.assign(NPC_LOOK,{
  ruth:{name:'Pastor Ruth',skin:'#a0663f',hair:'#c9c9d6',style:'bun',outfit:{top:'#7d5ba6',pants:'#2f2a3a'},glasses:1,collar:1},
  odette:{name:'Odette',skin:'#f9dcc4',hair:'#9b7bd8',style:'bun',outfit:{top:'#3f5a8a',pants:'#5b4660',spots:1},glasses:1},
  delgado:{name:'Mr. Delgado',skin:'#c68c5a',hair:'#5a3825',style:'short',outfit:{top:'#ffe6a0',pants:'#4a4f6b'},glasses:1}});
-Object.assign(DLG_NAMES,{corey:'Corey 💞',jen:'Jen · The Daily Grind',maria:'Maria Ortega',luis:'Luis Ortega',keisha:'Keisha Washington',darnell:'Darnell Washington',tessa:'Tessa Lind',june:'June Lind',harold:'Harold Quinn',pearl:'Pearl Quinn',linh:'Linh Nguyen',ruth:'Pastor Ruth · Island UMC',odette:'Odette · Island Library',delgado:'Mr. Delgado · Island School',bottle:'Message in a bottle',fish:'Fishing',lighthouse:'The Lighthouse',gull:'The Gull Shack',sign:'A little sign'});
+Object.assign(DLG_NAMES,{corey:'Corey 💞',jen:'Jen · The Daily Grind',nadey:'Nadey Jo Dunn · Next Door',maria:'Maria Ortega',luis:'Luis Ortega',keisha:'Keisha Washington',darnell:'Darnell Washington',tessa:'Tessa Lind',june:'June Lind',harold:'Harold Quinn',pearl:'Pearl Quinn',linh:'Linh Nguyen',ruth:'Pastor Ruth · Island UMC',odette:'Odette · Island Library',delgado:'Mr. Delgado · Island School',bottle:'Message in a bottle',fish:'Fishing',lighthouse:'The Lighthouse',gull:'The Gull Shack',sign:'A little sign'});
 const DLG_EMO={stand:'🥚',tv:'📺',bottle:'💌',fish:'🎣',lighthouse:'🗼',gull:'🛖',sign:'🪧'};
 /* home spots for each townsperson; schedule picks where they are by time of day */
 const HOMEOF={maria:'ortega',luis:'ortega',keisha:'wash',darnell:'wash',tessa:'lind',june:'lind',harold:'quinn',pearl:'quinn',linh:'nguyen'};
 const SPOT={coffee:[2030,884],coffee2:[1950,888],library:[2170,886],school:[2360,888],church:[2590,888],green:[2470,960],bench:[2300,960],beach:[2300,1270],
-  dock:[976,0],ebeach:[2400,1240]};
+  dock:[976,0],ebeach:[2400,1240],porch:[872,584],town:[640,1062]};
 function homeSpot(id){const h=NHOMES.find(x=>x.id===HOMEOF[id]);return[h.x+(id==='luis'||id==='darnell'||id==='june'||id==='pearl'?22:-16),h.y+22];}
 const SCHED={ // [startTime, place]
  maria:[[0,'home'],[.33,'coffee'],[.5,'green'],[.66,'home']],
@@ -2130,7 +2134,8 @@ const SCHED={ // [startTime, place]
  harold:[[0,'home'],[.38,'church'],[.6,'home']],
  pearl:[[0,'home'],[.35,'coffee'],[.55,'church'],[.65,'home']],
  linh:[[0,'home'],[.32,'school'],[.6,'home']],
- ruth:[[0,'church']],odette:[[0,'library']],delgado:[[0,'school'],[.66,'library']]};
+ ruth:[[0,'church']],odette:[[0,'library']],delgado:[[0,'school'],[.66,'library']],
+ nadey:[[0,'porch'],[.3,'town'],[.46,'porch'],[.6,'coffee'],[.76,'porch']]};
 const FOLK=Object.keys(SCHED).map(id=>({id,x:0,y:0,tx:0,ty:0,walk:0,moving:false,face:1,placed:false}));
 function schedTarget(id){
   const s=SCHED[id];let pl=s[0][1];for(const e of s)if(S.time>=e[0])pl=e[1];
@@ -2433,12 +2438,15 @@ const FOLK_TALK={
  linh:["My son Bao wants to be a heron when he grows up. I said 'like, study them?' He said 'no.'","The school's always short on supplies. Every little thing helps — crayons, books, a tissue box."],
  ruth:["We're a small church with a big closet. Folks bring what they don't need, folks take what they do. That's the whole sermon, really.","The Care Closet's open to everybody. No forms, no fuss. Walkers, wheelchairs, baby gear — whatever helps.","I'm not here to preach at you, Haley. I'm here to hand out casseroles and hugs. Mostly casseroles."],
  odette:["Shh. …Kidding. This is a library, not a crypt. Laugh all you want.","Every book on these shelves was somebody's favorite once. Now it can be yours.","If you find books in the junk piles, bring them here. Thrifted books deserve second chapters."],
- delgado:["Recess is my favorite subject. Don't tell the principal. I'm also the principal.","The kids voted to name the class goldfish 'Mr. Delgado Jr.' I've never been prouder."]};
+ delgado:["Recess is my favorite subject. Don't tell the principal. I'm also the principal.","The kids voted to name the class goldfish 'Mr. Delgado Jr.' I've never been prouder."],
+ nadey:["There's always iced tea at my place, Haley. Always. If the pitcher is ever empty, check on me, because something is wrong.","You and Corey are the best thing to happen to this side of the island. I tell everybody that. Loudly. At the grocery store.","Jen and I were just talking about you. All good things. Well — mostly good. The rest was funny.","If you ever need a cup of sugar, a ride somewhere, or somebody to hold the flashlight and say 'uh-huh, I see it' — that's me. I'm your girl."]};
 const FOLK_BLOOM=["Flowers?! For me? Okay, I'm putting these in the good vase.","You brought me FLOWERS. I'm telling everyone. Everyone.","These smell like a Saturday morning. Thank you, sweetheart."];
 function talkFolk(id){
   const m=deliverable(id);if(m){payNeed(m.need);updHUD();openDialog(id,m.line,()=>completeMission(m));return;}
+  if(id==='nadey'&&!S.flags.metNadey){S.flags.metNadey=1;openDialog(id,["Well hey, neighbor! I'm Nadey Jo Dunn — from right next door, in spirit and in porch distance.","Haley, I've been meaning to come say hi properly. Any friend of this island is stuck with me, and you are my favorite neighbor. Don't tell the hens I ranked them.","There's always iced tea on my porch. Come by anytime — for tea, for gossip, or for no reason at all. No reason is my favorite reason."],()=>{updHUD();saveGame();});return;}
   const p=pendingAt(id),ch=[];
   if(S.bloom>0)ch.push(['🌻 Give garden flowers',[pick(FOLK_BLOOM)],()=>{S.bloom--;addKind(1);SFX.friend();emitHearts(P.x,P.y-40,4);updHUD();saveGame();}]);
+  if(id==='nadey'&&S.flags.teaDay!==S.day)ch.push(['🧋 Have an iced tea',["Nadey Jo pours you a tall iced tea — extra ice, lemon on the rim. \"House rule: the first glass is just to say hi. The second glass is gossip.\"","You drink it on the porch while the island does its thing. It's perfect. +25 ⚡"],()=>{S.flags.teaDay=S.day;S.energy=Math.min(100,S.energy+25);addKind(1);SFX.friend();emitHearts(P.x,P.y-40,4);updHUD();saveGame();}]);
   if(id==='ruth')ch.push(['🏥 Open the Care Closet',[],()=>setTimeout(openChurch,10)]);
   if(id==='odette')ch.push(['📚 Browse the library',[],()=>setTimeout(openLibrary,10)]);
   if(id==='delgado')ch.push(['🎒 Donate school supplies',[],()=>setTimeout(openSchool,10)]);
@@ -2775,7 +2783,7 @@ function openLibrary(){
       body.appendChild(rowEl('<div class="grow"><b>📦 Box of Thrifted Books ×'+boxes.length+'</b><small>Donated so far: '+S.lib.don+'</small></div>',[btn('Donate 💗','sbtn mint',()=>{const it=S.items.find(i=>i.t==='bookbox');if(!it)return;S.items.splice(S.items.indexOf(it),1);S.lib.don++;addKind(1);SFX.friend();toast('📚 Odette: "Second chapters for every one of these." The shelves grow!',3600);updHUD();xRebuild();saveGame();},!boxes.length)]));
     }},{tabs:[['borrow','📖 Borrow'],['nook','🛋️ Reading nook'],['donate','📦 Donate']]});}
 /* ---------- church & Care Closet (DME + baby gear) ---------- */
-const REQ_POOL=[['harold','walker'],['pearl','showerchair'],['darnell','crutches'],['harold','cane'],['june','wheelchair'],['luis','kneescooter'],['pearl','cane'],['linh','crutches'],
+const REQ_POOL=[['harold','walker'],['pearl','showerchair'],['darnell','crutches'],['harold','cane'],['june','wheelchair'],['luis','kneescooter'],['pearl','cane'],['linh','crutches'],['nadey','crutches'],
  ['maria','stroller',1],['maria','carseat',1],['keisha','rockswing',1],['keisha','bassinet',1],['tessa','babyclothes',1],['tessa','stroller',1],['maria','babyclothes',1],['keisha','crib',1]];
 const REQ_WHY={walker:'to get to the mailbox and back without huffing',showerchair:'so bath time is safe again',crutches:'— sprained an ankle at pickup basketball',cane:'for steadier walks to church',wheelchair:'for her mom, who\'s visiting for a month',kneescooter:'after foot surgery (he\'s VERY bored)',
  stroller:'— the babies will need rides!',carseat:'to bring the baby home from the hospital',rockswing:'— Keisha read that swings save sanity',bassinet:'for the first few months',babyclothes:'— everything is so tiny!',crib:'for the nursery'};
@@ -2808,7 +2816,7 @@ function openChurch(tab){if(S.reqDay!==S.day)genReqs();
 function deliverReq(r){let src='closet';if((S.closet[r.t]||0)>0)S.closet[r.t]--;else{const it=S.items.find(i=>i.t===r.t);if(!it)return;S.items.splice(S.items.indexOf(it),1);src='bag';}
   S.req.splice(S.req.indexOf(r),1);if(r.baby){S.stats.babyDelivered++;S.nbr[r.who]=(S.nbr[r.who]||0)+1;}else S.stats.dmeDelivered++;addKind(3);SFX.fanfare();emitHearts(P.x,P.y-40,6);
   const nm=NPC_LOOK[r.who]?NPC_LOOK[r.who].name:r.who;
-  const thanks={harold:'Harold grumbles "didn\'t need it" and then does three laps around the yard. Pearl is crying.',pearl:'Pearl hugs you so long your arms fall asleep.',darnell:'Darnell hops to the door on one foot to say thanks. Keisha: "SIT DOWN."',june:'June\'s mom rolls straight to the coffee shop. Jen named her "Speed Racer."',luis:'Luis: "I can finally reach the snacks." He is VERY grateful.',linh:'Bao decorates the crutches with heron stickers immediately.',maria:'Maria: "One down, one to go— wait, it\'s twins. Two of everything." She hugs you twice.',keisha:'Keisha sets it up in the nursery and just stares at it for a while. "It\'s real now."',tessa:'Tessa holds it up and bursts into happy tears. June hands her a tissue from her prepared tissue pack.'};
+  const thanks={harold:'Harold grumbles "didn\'t need it" and then does three laps around the yard. Pearl is crying.',pearl:'Pearl hugs you so long your arms fall asleep.',darnell:'Darnell hops to the door on one foot to say thanks. Keisha: "SIT DOWN."',june:'June\'s mom rolls straight to the coffee shop. Jen named her "Speed Racer."',luis:'Luis: "I can finally reach the snacks." He is VERY grateful.',linh:'Bao decorates the crutches with heron stickers immediately.',maria:'Maria: "One down, one to go— wait, it\'s twins. Two of everything." She hugs you twice.',keisha:'Keisha sets it up in the nursery and just stares at it for a while. "It\'s real now."',tessa:'Tessa holds it up and bursts into happy tears. June hands her a tissue from her prepared tissue pack.',nadey:'Nadey Jo: "You are the sweetest neighbor. Iced tea is on me forever." She means it literally — there is somehow already a glass in your hand.'};
   openDialog(r.who,[(thanks[r.who]||nm+' is so grateful.')],()=>{toast('🚚 Delivered '+itemName(r.t)+' to '+nm+'! +3 💗',3400);updHUD();saveGame();xRebuild();});
   if(r.baby&&S.nbr[r.who]>=2){const h=HOMEOF[r.who];if(h&&!S.babies[h]){S.babies[h]=S.day+2;}}}
 /* ---------- school ---------- */
